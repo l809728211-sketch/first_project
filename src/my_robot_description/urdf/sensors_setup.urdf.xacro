@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<robot name="sensor_car" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <link name="base_link">
+    <visual>
+      <geometry><box size="0.4 0.3 0.15"/></geometry>
+      <material name="gray"><color rgba="0.5 0.5 0.5 1.0"/></material>
+    </visual>
+    <collision>
+      <geometry><box size="0.4 0.3 0.15"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="5.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0.047" ixy="0.0" ixz="0.0" iyy="0.076" iyz="0.0" izz="0.104"/>
+    </inertial>
+  </link>
+
+
+
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel"/>
+    <origin xyz="-0.1 0.175 -0.05" rpy="-1.5708 0 0"/> <axis xyz="0 0 1"/>
+  </joint>
+  <link name="left_wheel">
+    <visual>
+      <geometry><cylinder radius="0.08" length="0.04"/></geometry>
+      <material name="black"><color rgba="0 0 0 1.0"/></material>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="0.08" length="0.04"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+  </link>
+
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel"/>
+    <origin xyz="-0.1 -0.175 -0.05" rpy="-1.5708 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  <link name="right_wheel">
+    <visual>
+      <geometry><cylinder radius="0.08" length="0.04"/></geometry>
+      <material name="black"><color rgba="0 0 0 1.0"/></material>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="0.08" length="0.04"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+    </inertial>
+  </link>
+
+  <joint name="caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="caster_wheel"/>
+    <origin xyz="0.15 0 -0.09" rpy="0 0 0"/>
+  </joint>
+  <link name="caster_wheel">
+    <visual>
+      <geometry><sphere radius="0.04"/></geometry>
+      <material name="white"><color rgba="1 1 1 1.0"/></material>
+    </visual>
+    <collision>
+      <geometry><sphere radius="0.04"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.2"/>
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
+    </inertial>
+  </link>
+  <gazebo reference="caster_wheel">
+    <mu1>0.0</mu1> <mu2>0.0</mu2>
+  </gazebo>
+
+
+
+  <joint name="mid360_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="mid360_link"/>
+    <origin xyz="0.0 0 0.15" rpy="0 0 0"/> 
+  </joint>
+  <link name="mid360_link">
+    <visual>
+      <geometry><cylinder radius="0.03" length="0.05"/></geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="0.03" length="0.05"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.2"/>
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
+    </inertial>
+  </link>
+  <gazebo reference="mid360_link">
+    <sensor type="ray" name="livox_mid360">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>false</visualize>
+      <update_rate>10.0</update_rate>
+      <plugin name="gazebo_ros_laser" filename="liblivox_laser_simulation.so">
+        <ros><namespace>/</namespace><remapping>~/out:=/livox/lidar</remapping></ros>
+        <ray>
+          <scan>
+            <horizontal><samples>1000</samples><resolution>1</resolution><min_angle>-3.14159</min_angle><max_angle>3.14159</max_angle></horizontal>
+            <vertical><samples>36</samples><resolution>1</resolution><min_angle>-0.12217</min_angle><max_angle>0.92502</max_angle></vertical>
+          </scan>
+          <range><min>0.1</min><max>40.0</max><resolution>0.01</resolution></range>
+        </ray>
+        <visualize>false</visualize><samples>10000</samples><downsample>1</downsample>
+        <csv_file_name>package://livox_laser_simulation_ros2/scan_mode/mid360.csv</csv_file_name>
+        <topic>/livox/lidar</topic>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <joint name="orbbec_camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="orbbec_camera_link"/>
+    <origin xyz="0.2 0 0.05" rpy="0 0 0"/> 
+  </joint>
+  <link name="orbbec_camera_link">
+    <visual>
+      <geometry><box size="0.02 0.1 0.03"/></geometry>
+      <material name="blue"/>
+    </visual>
+    <collision>
+      <geometry><box size="0.02 0.1 0.03"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
+    </inertial>
+  </link>
+  <joint name="orbbec_camera_optical_joint" type="fixed">
+    <parent link="orbbec_camera_link"/>
+    <child link="orbbec_camera_optical_link"/>
+    <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+  </joint>
+  <link name="orbbec_camera_optical_link"/>
+
+  <gazebo reference="orbbec_camera_link">
+    <sensor type="depth" name="orbbec_depth_camera">
+      <always_on>true</always_on><update_rate>15.0</update_rate>
+      <camera>
+        <horizontal_fov>1.50098</horizontal_fov>
+        <image><width>640</width><height>480</height><format>R8G8B8</format></image>
+        <clip><near>0.1</near><far>8.0</far></clip>
+      </camera>
+      <plugin name="orbbec_camera_controller" filename="libgazebo_ros_camera.so">
+        <ros>
+          <namespace>camera</namespace>
+          <remapping>custom_camera/image_raw:=color/image_raw</remapping>
+          <remapping>custom_camera/image_depth:=depth/image_raw</remapping>
+          <remapping>custom_camera/camera_info:=color/camera_info</remapping>
+          <remapping>custom_camera/camera_info_depth:=depth/camera_info</remapping>
+          <remapping>custom_camera/points:=depth/points</remapping>
+        </ros>
+        <camera_name>front_camera</camera_name>
+        <frame_name>orbbec_camera_optical_link</frame_name>
+        <hack_baseline>0.07</hack_baseline><min_depth>0.1</min_depth><max_depth>8.0</max_depth>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+      <update_rate>30</update_rate>
+      <left_joint>left_wheel_joint</left_joint>
+      <right_joint>right_wheel_joint</right_joint>
+      <wheel_separation>0.35</wheel_separation>
+      <wheel_diameter>0.16</wheel_diameter>
+      <max_wheel_torque>20</max_wheel_torque>
+      <max_wheel_acceleration>1.0</max_wheel_acceleration>
+      <command_topic>cmd_vel</command_topic>
+      <publish_odom>true</publish_odom>
+      <publish_odom_tf>true</publish_odom_tf>
+      <publish_wheel_tf>false</publish_wheel_tf>
+      <odometry_topic>odom</odometry_topic>
+      <odometry_frame>odom</odometry_frame>
+      <robot_base_frame>base_link</robot_base_frame>
+    </plugin>
+  </gazebo>
+
+</robot>
